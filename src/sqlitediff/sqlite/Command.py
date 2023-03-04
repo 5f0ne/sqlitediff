@@ -1,2 +1,5 @@
+from string import Template
+
 class Command():
-    TABLE_NAMES = "SELECT name FROM sqlite_schema where type = 'table'"
+    TABLE_NAMES = "SELECT name FROM sqlite_master where type = 'table'"
+    SELECT_ALL = Template("SELECT * FROM $table")

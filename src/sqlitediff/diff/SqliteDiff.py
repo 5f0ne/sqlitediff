@@ -1,37 +1,42 @@
-import sqlite3
-
+from sqlitediff.model.Snapshot import Snapshot
 from sqlitediff.sqlite.Command import Command
 from sqlitediff.diff.DiffResult import DiffResult
 
 class SqliteDiff():
     def __init__(self, pathBefore, pathAfter) -> None:
-        self._beforeDB = sqlite3.connect(pathBefore)
-        self._beforeCursor = self._beforeDB.cursor()
-        self._afterDB = sqlite3.connect(pathAfter)
-        self._afterCursor = self._afterDB.cursor()
-        self._beforeTables = set()
-        self._afterTables = set()
+        self.beforeSnapshot = Snapshot("before", pathBefore)
+        self.afterSnapshot = Snapshot("after", pathAfter)
+        self.bTableSet = self.beforeSnapshot.getTablesSet()
+        self.aTableSet = self.afterSnapshot.getTablesSet()
 
     def _getDeletedTables(self):
-        deltaTables = self._beforeTables.difference(self._afterTables)
-        return list(deltaTables)
+        t = self.bTableSet.difference(self.aTableSet)
+        return list(t)
     
     def _getCreatedTables(self):
-        deltaTables = self._afterTables.difference(self._beforeTables)
-        return list(deltaTables)
+        t = self.aTableSet.difference(self.bTableSet)
+        return list(t)
+    
+    def _getDeletedRows(self):
+        pass
 
-    def _processTables(self):
-        tables = self._beforeCursor.execute(Command.TABLE_NAMES).fetchall()
-        for table in tables:
-            self._beforeTables.add(table[0])
+    def _getUpdatedRows(self):
+        pass
 
-        tables = self._afterCursor.execute(Command.TABLE_NAMES).fetchall()
-        for table in tables:
-            self._afterTables.add(table[0])
+    def _getCreatedRows(self):
+        pass
 
-    def process(self):
-        self._processTables()
+    def processTables(self):
         deletedTables = self._getDeletedTables()
         createdTables = self._getCreatedTables()
-        result = DiffResult(deletedTables, createdTables, list(self._beforeTables), list(self._afterTables))
+        beforeTables = self.beforeSnapshot.getTablesList()
+        afterTables = self.afterSnapshot.getTablesList()
+        result = DiffResult(deletedTables, createdTables, 
+                            beforeTables, afterTables)
         return result
+
+    def processRows(self):
+
+
+        return ()
+

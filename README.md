@@ -54,14 +54,44 @@ Datetime: 01/01/1970 11:12:13
 
 ################################################################################
 
-Tables before Action: ['fish', 'people', 'dog']
-Tables after Action: ['fish', 'snowman']
-Deleted Tables: ['people', 'dog']
-Created Tables: ['snowman']
+Table Analysis
+---
+
+ --> Tables before Action:
+         ---
+         List: ['dog', 'fish', 'people']
+         ---
+         Name: dog
+      Entries: 4
+         ---
+         Name: fish
+      Entries: 2
+         ---
+         Name: people
+      Entries: 0
+         ---
+
+ --> Tables after Action:
+         ---
+         List: ['fish', 'snowman']
+         ---
+         Name: fish
+      Entries: 1
+         ---
+         Name: snowman
+      Entries: 0
+         ---
+
+ --> Deleted Tables:
+         --> ['dog', 'people']
+
+ --> Created Tables:
+         --> ['snowman']
 
 ################################################################################
 
 Execution Time: 0.010948 sec
+
 ```
 
 

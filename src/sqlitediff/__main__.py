@@ -20,10 +20,12 @@ def main(args_=None):
     ctrl.printHeader()
     
     diff = SqliteDiff(args.pathBefore, args.pathAfter)
-    diffResult = diff.process()
+    tableResult = diff.processTables()
+    #rowResult = diff.processRows()
 
+  
     printer = Printer()
-    printer.print(diffResult)
+    printer.print(tableResult)
 
     ctrl.printExecutionTime()
 
