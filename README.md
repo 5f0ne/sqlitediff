@@ -8,10 +8,10 @@ Detects changes between versions of sqlite files:
   - Table created
   - Table deleted
 
-- **Table Entry**
-  - Entry created
-  - Entry modified
-  - Entry deleted
+- **Table Row**
+  - Row created
+  - Row modified
+  - Row deleted
 
 # Installation
 
