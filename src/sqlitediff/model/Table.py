@@ -8,12 +8,6 @@ class Table():
         self.ids = []
         for id in ids:
             self.ids.append(id[0])
-
-    def addRow(self, row):
-        self.rows.append(Row(row))
-
-    def getNumberOfRows(self):
-        return len(self.rows)
     
     def getIdSet(self):
         return set(self.ids)

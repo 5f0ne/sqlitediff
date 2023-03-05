@@ -118,6 +118,18 @@ Row Analysis
      --> (1, 'olaf', 'snow', 1)
     ---
 
+--> dog
+    ---
+    Colums:
+    ---
+     --> ['id', 'name', 'species', 'garden']
+    ---
+    Deleted: [1, 2]
+    ---
+     --> (1, 'Bill', 'shepard', 1)
+     --> (2, 'Tom', 'little', 7)
+    ---
+
 ################################################################################
 
 Execution Time: 0.010948 sec

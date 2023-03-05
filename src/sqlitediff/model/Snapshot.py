@@ -27,13 +27,9 @@ class Snapshot():
         rows = self.dbCursor.execute(Command.SELECT_ALL.substitute(table=tableName)).fetchall()
         columns = self._processColumns(self.dbCursor.description)
 
-        ids = []
-        if("sqlite" not in tableName):
-            ids = self.dbCursor.execute(Command.SELECT_ID.substitute(column=self.id, table=tableName)).fetchall()
-
+        ids = self.dbCursor.execute(Command.SELECT_ID.substitute(column=self.id, table=tableName)).fetchall()
+        
         t = Table(tableName, columns, ids)
-        for row in rows:
-            t.addRow(row)
         self.tables.append(t)
 
     def getTablesSet(self):
@@ -45,7 +41,9 @@ class Snapshot():
     def getTablesList(self):
         result = []
         for table in self.tables:
-            result.append((table.name, table.getNumberOfRows()))
+            cmd = Command.COUNT_ROWS.substitute(table=table.name)
+            count = self.dbCursor.execute(cmd).fetchall()
+            result.append((table.name, count[0][0]))
         return result
     
     def getTableForName(self, name):
