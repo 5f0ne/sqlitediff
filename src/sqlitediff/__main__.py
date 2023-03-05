@@ -14,18 +14,19 @@ def main(args_=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--pathBefore", "-b", type=str, required=True, help="Path to sqlite file before action")
     parser.add_argument("--pathAfter", "-a", type=str, required=True, help="Path to sqlite file after action")
+    parser.add_argument("--primaryKey", "-p", type=str, default="rowid", help="Name of the primary key column")
     args = parser.parse_args()
 
     ctrl = Controller(args.pathBefore, args.pathAfter)
     ctrl.printHeader()
     
-    diff = SqliteDiff(args.pathBefore, args.pathAfter)
+    diff = SqliteDiff(args.primaryKey, args.pathBefore, args.pathAfter)
     tableResult = diff.processTables()
-    #rowResult = diff.processRows()
 
-  
     printer = Printer()
     printer.print(tableResult)
+
+ #   printer.printSnapshot(diff.afterSnapshot)
 
     ctrl.printExecutionTime()
 

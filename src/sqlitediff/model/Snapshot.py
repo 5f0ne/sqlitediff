@@ -4,7 +4,8 @@ from sqlitediff.sqlite.Command import Command
 from sqlitediff.model.Table import Table
 
 class Snapshot():
-    def __init__(self, name, path) -> None:
+    def __init__(self, name, path, id) -> None:
+        self.id = id
         self.name = name
         self.tables = []
         self.dbHandle = sqlite3.connect(path)
@@ -26,7 +27,11 @@ class Snapshot():
         rows = self.dbCursor.execute(Command.SELECT_ALL.substitute(table=tableName)).fetchall()
         columns = self._processColumns(self.dbCursor.description)
 
-        t = Table(tableName, columns)
+        ids = []
+        if("sqlite" not in tableName):
+            ids = self.dbCursor.execute(Command.SELECT_ID.substitute(column=self.id, table=tableName)).fetchall()
+
+        t = Table(tableName, columns, ids)
         for row in rows:
             t.addRow(row)
         self.tables.append(t)
@@ -41,4 +46,20 @@ class Snapshot():
         result = []
         for table in self.tables:
             result.append((table.name, table.getNumberOfRows()))
+        return result
+    
+    def getTableForName(self, name):
+        result = None
+        for t in self.tables:
+            if(t.name == name):
+                result = t
+                break
+        return result
+
+    def getRowsForIds(self, table, ids):
+        result = []
+        for id in ids:
+            cmd = Command.SELECT_ALL_WHERE.substitute(table=table, condition=self.id + "=" + str(id))
+            r = self.dbCursor.execute(cmd).fetchall()
+            result.append(r[0])
         return result

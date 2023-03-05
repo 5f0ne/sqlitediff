@@ -1,12 +1,13 @@
 # Description
 
-Differential analysis of sqlite files
+Differential analysis of sqlite files based on primary key (rowid)
 
 Detects changes between versions of sqlite files:
 
 - **Database Tables**
   - Table created
   - Table deleted
+
 - **Table Entry**
   - Entry created
   - Entry modified
@@ -20,12 +21,13 @@ Detects changes between versions of sqlite files:
 
 **From command line:**
 
-`python -m sqlitediff --pathBefore PATHBEFORE --pathAfter PATHAFTER`
+`python -m sqlitediff --pathBefore PATHBEFORE --pathAfter PATHAFTER [--primaryKey PRIMARYKEY]`
 
 | Option | Short | Type | Default | Description |
 |---|---|---|---|---|
 |--pathBefore | -b | String | - | Path to sqlite file before action |
-|--pathAfter | -a| String | - | Path to sqlite file after action |
+|--pathAfter | -a | String | - | Path to sqlite file after action |
+|--primaryKey | -p | String | rowid | Name of the primary key column |
 
 
 # Example
@@ -57,36 +59,64 @@ Datetime: 01/01/1970 11:12:13
 Table Analysis
 ---
 
- --> Tables before Action:
-         ---
-         List: ['dog', 'fish', 'people']
-         ---
+--> Tables before Action: 
+         --- 
+         List: ['dog', 'fish']
+         --- 
          Name: dog
-      Entries: 4
-         ---
+      Entries: 2
+         --- 
          Name: fish
       Entries: 2
-         ---
-         Name: people
-      Entries: 0
-         ---
+         --- 
 
- --> Tables after Action:
-         ---
+--> Tables after Action: 
+         --- 
          List: ['fish', 'snowman']
-         ---
+         --- 
          Name: fish
-      Entries: 1
-         ---
+         Rows: 3
+         --- 
          Name: snowman
-      Entries: 0
-         ---
+         Rows: 1
+         --- 
 
- --> Deleted Tables:
-         --> ['dog', 'people']
+--> Deleted Tables: 
+         --> ['dog']
 
- --> Created Tables:
+--> Created Tables: 
          --> ['snowman']
+
+
+Row Analysis
+---
+
+--> fish
+    ---
+    Colums:
+    ---
+     --> ['id', 'name', 'species', 'tank']
+    ---
+    Created: {3, 4}
+    ---
+     --> (3, 'leo', 'whale', 3)
+     --> (4, 'clark', 'delfin', 4)
+    ---
+    Deleted: {1}
+    ---
+     --> (1, 'sammy', 'shark', 1)
+    ---
+
+--> snowman
+    ---
+    Colums:
+    ---
+     --> ['id', 'name', 'species', 'fridge']
+    ---
+    Created: [1]
+    ---
+     --> (1, 'olaf', 'snow', 1)
+    ---
 
 ################################################################################
 
