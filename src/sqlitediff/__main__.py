@@ -1,6 +1,5 @@
-import sys
-
 import argparse
+import sys
 
 from sqlitediff.Controller import Controller
 from sqlitediff.diff.SqliteDiff import SqliteDiff
@@ -15,6 +14,7 @@ def main(args_=None):
     parser.add_argument("--pathBefore", "-b", type=str, required=True, help="Path to sqlite file before action")
     parser.add_argument("--pathAfter", "-a", type=str, required=True, help="Path to sqlite file after action")
     parser.add_argument("--primaryKey", "-p", type=str, default="rowid", help="Name of the primary key column")
+    parser.add_argument("--printSnapshot", "-s", type=str, choices=["before", "after"], help="Name of the primary key column")
     args = parser.parse_args()
 
     ctrl = Controller(args.pathBefore, args.pathAfter)
@@ -24,7 +24,12 @@ def main(args_=None):
     result = diff.process()
 
     printer = Printer()
-    printer.print(result)
+
+    if(args.printSnapshot != None and (args.printSnapshot == "before" or args.printSnapshot == "after")):
+        s = diff.getSnapshotForName(args.printSnapshot)
+        printer.printSnapshot(s)
+    else:    
+        printer.printAnalysis(result)
 
     ctrl.printExecutionTime()
 

@@ -61,3 +61,13 @@ class Snapshot():
             r = self.dbCursor.execute(cmd).fetchall()
             result.append(r[0])
         return result
+    
+    def getRowsForTable(self, table):
+        cmd = Command.SELECT_ALL.substitute(table=table)
+        rows = self.dbCursor.execute(cmd).fetchall()
+        return rows
+    
+    def getRowCountForTable(self, table):
+        cmd = Command.COUNT_ROWS.substitute(table=table)
+        count = self.dbCursor.execute(cmd).fetchall()
+        return count[0][0]

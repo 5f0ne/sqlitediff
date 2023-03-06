@@ -1,6 +1,9 @@
-from sqlitediff.model.Snapshot import Snapshot
+import hashlib
+
 from sqlitediff.diff.DiffResult import DiffResult
+from sqlitediff.model.Snapshot import Snapshot
 from sqlitediff.model.TableResult import TableResult
+
 
 class SqliteDiff():
     def __init__(self, id, pathBefore, pathAfter) -> None:
@@ -16,6 +19,14 @@ class SqliteDiff():
     def _getCreatedTables(self):
         t = self.aTableSet.difference(self.bTableSet)
         return list(t)
+    
+    def getSnapshotForName(self, name):
+        result = None
+        if(name == "before"):
+            result = self.beforeSnapshot
+        elif(name == "after"):
+            result = self.afterSnapshot
+        return result
     
     def process(self):
         deletedTables = self._getDeletedTables()
@@ -40,24 +51,45 @@ class SqliteDiff():
                 createdRowValues = self.afterSnapshot.getRowsForIds(table, createdRows)
                 deletedRowValues = self.beforeSnapshot.getRowsForIds(table, deletedRows)
 
+                sameRows = list(tAfterIdSet.intersection(tbeforeIdSet))
+                sameRowValuesBefore = self.beforeSnapshot.getRowsForIds(table, sameRows)
+                sameRowValuesAfter = self.afterSnapshot.getRowsForIds(table, sameRows)
+
+                updatedRows = []
+                for i in range(0, len(sameRows)):
+                    bHash = hashlib.sha256(str(sameRowValuesBefore[i]).encode()).hexdigest()
+                    aHash = hashlib.sha256(str(sameRowValuesAfter[i]).encode()).hexdigest()
+                    if(bHash != aHash):
+                        updatedRows.append(sameRows[i])
+
+                updatedRowValuesBefore = self.beforeSnapshot.getRowsForIds(table, updatedRows)
+                updatedRowValuesAfter = self.afterSnapshot.getRowsForIds(table, updatedRows)
+
             elif(tBeforeTable != None and tAfterTable == None):
-                # Case 3: Table exists in before Snapshot but not in after snapshot
+                # Case 2: Table exists in before Snapshot but not in after snapshot
                 columns = tBeforeTable.columns
                 createdRows = []
                 createdRowValues = []
                 deletedRows = self.beforeSnapshot.getTableForName(table).ids
                 deletedRowValues = self.beforeSnapshot.getRowsForIds(table, deletedRows)
+                updatedRows = []
+                updatedRowValuesBefore = []
+                updatedRowValuesAfter = []
 
             elif(tBeforeTable == None and tAfterTable != None):
-                # Case 2: Table exists in before Snapshot but not in after snapshot
+                # Case 3: Table exists in after Snapshot but not in before snapshot
                 columns = tAfterTable.columns
                 createdRows = self.afterSnapshot.getTableForName(table).ids
                 createdRowValues = self.afterSnapshot.getRowsForIds(table, createdRows)
                 deletedRows = {}
                 deletedRowValues = []
+                updatedRows = []
+                updatedRowValuesBefore = []
+                updatedRowValuesAfter = []
 
             tResult = TableResult(table, columns, createdRows, 
-                                  deletedRows, createdRowValues, deletedRowValues)
+                                  deletedRows, createdRowValues, deletedRowValues,
+                                  updatedRows, updatedRowValuesBefore, updatedRowValuesAfter)
             tableResultList.append(tResult)
         
         result = DiffResult(deletedTables, createdTables, 

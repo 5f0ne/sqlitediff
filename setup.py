@@ -5,7 +5,7 @@ with open("README.md", "r") as r:
 
 setup(
     name="sqlitediff",             
-    version="0.3.0",
+    version="1.0.0",
     author="5f0",
     url="https://github.com/5f0ne/sqlitediff",
     description="Differential analysis of sqlite files",

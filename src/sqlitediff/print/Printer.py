@@ -56,18 +56,25 @@ class Printer():
                 for value in t.createdRowValues:
                     print("     --> " + str(value))
                 print("    ---")
+            if(len(t.updatedRows) > 0):
+                print("   Updated: " + str(t.updatedRows))
+                print("    ---")
+                for i in range(0, len(t.updatedRows)):
+                    print("     --> " + str(t.updatedRowValuesBefore[i]))
+                    print("     --> " + str(t.updatedRowValuesAfter[i]))
+                    print("    ---")
             if(len(t.deletedRows) > 0):    
                 print("    Deleted: " + str(t.deletedRows))
                 print("    ---")
                 for value in t.deletedRowValues:
                     print("     --> " + str(value))
                 print("    ---")
-            if(len(t.createdRows) == 0 and len(t.deletedRows) == 0):
-                print("    No Impact")
+            if(len(t.createdRows) == 0 and len(t.deletedRows) == 0 and len(t.updatedRows) == 0):
+                print("    No Changes")
                 print("    ---")
             print("")
 
-    def print(self, result):
+    def printAnalysis(self, result):
         self._printTableAnalysis(result)
         self._printRowAnalysis(result)
 
@@ -77,11 +84,11 @@ class Printer():
         print("---")
         for table in snapshot.tables:
             print("   Table Name: " + table.name)
+            print("         Rows: " + str(snapshot.getRowCountForTable(table.name)))
             print("      Columns: " + str(table.columns))
-            print("         Rows: ")
-            for row in table.rows:
-                print("          --> " + row.sha256)
-            print("          Ids: ")
-            for id in table.ids:
-                print("          --> " + str(id))
-        print("---")
+            print("   Row Values: ")
+            print("          --- ")
+            for row in snapshot.getRowsForTable(table.name):
+                    print("           --> " + str(row))
+            print("          --- ")
+            print("---")
